@@ -22,6 +22,12 @@ const { sendTaskNotification } = require('./notifications');
 // Create a new task (Admin only)
 exports.createTask = async (event) => {
   try {
+    // Add defensive coding to handle missing authorizer
+    if (!event.requestContext || !event.requestContext.authorizer || !event.requestContext.authorizer.claims) {
+      console.log('Missing authorization context:', JSON.stringify(event));
+      return response(401, { error: 'Missing authorization context' });
+    }
+    
     // Get user claims from the event
     const userGroups = event.requestContext.authorizer.claims['cognito:groups'];
     const adminEmail = event.requestContext.authorizer.claims['email'];
@@ -70,6 +76,12 @@ exports.createTask = async (event) => {
 // Get tasks based on user role
 exports.getTasks = async (event) => {
   try {
+    // Add defensive coding to handle missing authorizer
+    if (!event.requestContext || !event.requestContext.authorizer || !event.requestContext.authorizer.claims) {
+      console.log('Missing authorization context:', JSON.stringify(event));
+      return response(401, { error: 'Missing authorization context' });
+    }
+    
     // Get user claims from the event
     const userGroups = event.requestContext.authorizer.claims['cognito:groups'];
     const userId = event.requestContext.authorizer.claims['email'];
@@ -101,6 +113,12 @@ exports.getTasks = async (event) => {
 // Update task status (Team members can only update status)
 exports.updateTask = async (event) => {
   try {
+    // Add defensive coding to handle missing authorizer
+    if (!event.requestContext || !event.requestContext.authorizer || !event.requestContext.authorizer.claims) {
+      console.log('Missing authorization context:', JSON.stringify(event));
+      return response(401, { error: 'Missing authorization context' });
+    }
+    
     const taskId = event.pathParameters.taskId;
     const body = JSON.parse(event.body);
     const userGroups = event.requestContext.authorizer.claims['cognito:groups'];
