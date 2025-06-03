@@ -1,0 +1,220 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Task Management System for Field Teams
+
+Parameters:
+  SenderEmailParam:
+    Type: String
+    Default: noreply@yourdomain.com
+    Description: Email address to use as sender for notifications
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs18.x
+    MemorySize: 128
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+      AllowOrigin: "'http://taskbread1233.s3-website-eu-west-1.amazonaws.com'"
+      AllowCredentials: true
+
+Resources:
+  # DynamoDB Table for Tasks
+  TasksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Tasks
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: taskId
+          AttributeType: S
+        - AttributeName: assignedTo
+          AttributeType: S
+      KeySchema:
+        - AttributeName: taskId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: AssignedToIndex
+          KeySchema:
+            - AttributeName: assignedTo
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  # Post Confirmation Lambda Function
+  PostConfirmationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: post-confirmation.handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminAddUserToGroup
+              Resource: '*'
+
+  # Cognito User Pool for Authentication
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: TaskManagementUserPool
+      AutoVerifiedAttributes:
+        - email
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+        - Name: name
+          Required: true
+          Mutable: true
+        - Name: custom:role
+          AttributeDataType: String
+          Mutable: true
+      UsernameAttributes:
+        - email
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: false
+      LambdaConfig:
+        PostConfirmation: !GetAtt PostConfirmationFunction.Arn
+
+  # Permission for Cognito to invoke Lambda
+  PostConfirmationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref PostConfirmationFunction
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt UserPool.Arn
+
+  # User Pool Client
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: task-management-app
+      UserPoolId: !Ref UserPool
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      GenerateSecret: false
+
+  # Admin Group
+  AdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Admins
+      UserPoolId: !Ref UserPool
+
+  # Team Members Group
+  TeamMemberGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: TeamMembers
+      UserPoolId: !Ref UserPool
+
+  # SES Configuration
+  EmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: !Ref SenderEmailParam
+
+  # API Gateway
+  TasksApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'http://taskbread1233.s3-website-eu-west-1.amazonaws.com'"
+        AllowCredentials: true
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt UserPool.Arn
+
+  # Lambda Functions
+  CreateTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: tasks.createTask
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
+        - SESCrudPolicy:
+            IdentityName: !Ref SenderEmailParam
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+          SENDER_EMAIL: !Ref SenderEmailParam
+      Events:
+        CreateTask:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TasksApi
+            Path: /tasks
+            Method: post
+
+  GetTasksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: tasks.getTasks
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Events:
+        GetTasks:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TasksApi
+            Path: /tasks
+            Method: get
+
+  UpdateTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: tasks.updateTask
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
+        - SESCrudPolicy:
+            IdentityName: !Ref SenderEmailParam
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+          SENDER_EMAIL: !Ref SenderEmailParam
+      Events:
+        UpdateTask:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TasksApi
+            Path: /tasks/{taskId}
+            Method: put
+
+Outputs:
+  UserPoolId:
+    Description: ID of the Cognito User Pool
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: ID of the Cognito User Pool Client
+    Value: !Ref UserPoolClient
+  TasksTableName:
+    Description: Name of the DynamoDB table for tasks
+    Value: !Ref TasksTable
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${TasksApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+  SenderEmail:
+    Description: Email address used for sending notifications
+    Value: !Ref SenderEmailParam

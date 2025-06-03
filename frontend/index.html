@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Management System</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@5.2.10/dist/amazon-cognito-identity.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Authentication Section -->
+    <div id="auth-section" class="section">
+      <h1>Task Management System</h1>
+      <div id="login-form" class="auth-form">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button id="login-button">Login</button>
+        <p>Don't have an account? <a href="#" id="show-register">Register</a></p>
+      </div>
+      
+      <div id="register-form" class="auth-form hidden">
+        <h2>Register</h2>
+        <input type="text" id="register-name" placeholder="Full Name" required>
+        <input type="email" id="register-email" placeholder="Email" required>
+        <input type="password" id="register-password" placeholder="Password" required>
+        <button id="register-button">Register</button>
+        <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+      </div>
+    </div>
+
+    <!-- Main Application Section (Hidden until logged in) -->
+    <div id="app-section" class="section hidden">
+      <header>
+        <h1>Task Management Dashboard</h1>
+        <div class="user-info">
+          <span id="user-name"></span>
+          <span id="user-role"></span>
+          <a href="dashboard.html" class="nav-link">Dashboard</a>
+          <button id="logout-button">Logout</button>
+        </div>
+      </header>
+
+      <!-- Admin Section (Hidden for non-admins) -->
+      <div id="admin-section" class="hidden">
+        <h2>Create New Task</h2>
+        <div class="task-form">
+          <input type="text" id="task-title" placeholder="Task Title" required>
+          <textarea id="task-description" placeholder="Task Description"></textarea>
+          <select id="task-assignee" required>
+            <option value="">Assign To...</option>
+            <!-- Team members will be loaded here -->
+          </select>
+          <input type="date" id="task-deadline" required>
+          <select id="task-priority">
+            <option value="low">Low Priority</option>
+            <option value="medium" selected>Medium Priority</option>
+            <option value="high">High Priority</option>
+          </select>
+          <button id="create-task-button">Create Task</button>
+        </div>
+      </div>
+
+      <!-- Tasks Section -->
+      <div id="tasks-section">
+        <h2>My Tasks</h2>
+        <div class="task-filters">
+          <select id="status-filter">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <select id="priority-filter">
+            <option value="all">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <div id="tasks-container">
+          <!-- Tasks will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

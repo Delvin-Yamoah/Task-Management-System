@@ -1,0 +1,13 @@
+{
+  "name": "task-management-backend",
+  "version": "1.0.0",
+  "description": "Backend for Task Management System",
+  "main": "tasks.js",
+  "dependencies": {
+    "aws-sdk": "^2.1048.0",
+    "uuid": "^8.3.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
