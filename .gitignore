@@ -50,6 +50,7 @@ frontend/config.js
 demo-*.js
 
 # AWS Amplify
+# Only ignore generated files, keep configuration files
 amplify/\#current-cloud-backend
 amplify/.config/local-*
 amplify/logs
@@ -60,7 +61,7 @@ amplify/backend/.temp
 build/
 dist/
 node_modules/
-aws-exports.js
+# aws-exports.js - KEEP THIS FILE
 awsconfiguration.json
 amplifyconfiguration.json
 amplifyconfiguration.dart
@@ -71,4 +72,4 @@ amplifytools.xcconfig
 **.sample
 
 # App Runner
-apprunner.yaml
+# Keep apprunner.yaml for deployment

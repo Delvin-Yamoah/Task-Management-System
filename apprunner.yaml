@@ -1,0 +1,28 @@
+version: 1.0
+runtime: nodejs14
+build:
+  commands:
+    pre-build:
+      - echo "Installing dependencies..."
+    build:
+      - cd backend
+      - npm install
+    post-build:
+      - echo "Build completed"
+run:
+  command: cd backend && npm start
+  network:
+    port: 3000
+    env: PORT
+  env:
+    - name: AWS_REGION
+      value: eu-west-1
+    - name: TASKS_TABLE
+      value: Tasks
+    # These values will be set during deployment
+    - name: USER_POOL_ID
+      value: "REPLACE_WITH_USER_POOL_ID"
+    - name: SENDER_EMAIL
+      value: "REPLACE_WITH_SENDER_EMAIL"
+    - name: FRONTEND_URL
+      value: "REPLACE_WITH_AMPLIFY_URL"
