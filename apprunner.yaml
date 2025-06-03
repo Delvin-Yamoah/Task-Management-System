@@ -9,20 +9,23 @@ build:
       - npm install
     post-build:
       - echo "Build completed"
+      - ls -la backend
 run:
-  command: cd backend && npm start
+  command: cd backend && node server.js
   network:
     port: 3000
-    env: PORT
   env:
+    - name: PORT
+      value: "3000"
     - name: AWS_REGION
       value: eu-west-1
     - name: TASKS_TABLE
       value: Tasks
-    # Updated with actual values
     - name: USER_POOL_ID
       value: "eu-west-1_DXi2cNzOu"
     - name: SENDER_EMAIL
       value: "yamoahdelvin@gmail.com"
     - name: FRONTEND_URL
       value: "*"
+    - name: DEBUG
+      value: "express:*"

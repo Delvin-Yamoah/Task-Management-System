@@ -13,6 +13,14 @@ const TASKS_TABLE = process.env.TASKS_TABLE || 'Tasks';
 const USER_POOL_ID = process.env.USER_POOL_ID;
 const SENDER_EMAIL = process.env.SENDER_EMAIL;
 
+console.log('Starting application with configuration:');
+console.log(`PORT: ${port}`);
+console.log(`REGION: ${REGION}`);
+console.log(`TASKS_TABLE: ${TASKS_TABLE}`);
+console.log(`USER_POOL_ID: ${USER_POOL_ID}`);
+console.log(`SENDER_EMAIL: ${SENDER_EMAIL}`);
+console.log(`FRONTEND_URL: ${process.env.FRONTEND_URL}`);
+
 // AWS SDK configuration
 AWS.config.update({ region: REGION });
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
@@ -24,6 +32,39 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   credentials: true
 }));
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Task Management API is running' });
+});
+
+// Simplified authentication middleware for testing
+const authenticate = (req, res, next) => {
+  // For testing purposes, we'll use a simple token check
+  const authHeader = req.headers.authorization;
+  
+  // During development/testing, allow requests without auth
+  if (!authHeader) {
+    console.log('No authorization header, proceeding with default user');
+    req.user = {
+      email: 'admin@example.com',
+      groups: ['Admins']
+    };
+    return next();
+  }
+  
+  // In a real app, we would verify the token here
+  req.user = {
+    email: 'admin@example.com',
+    groups: ['Admins']
+  };
+  next();
+};
 
 // Helper function to send email notifications
 const sendTaskNotification = async (task, action, recipient) => {
@@ -83,35 +124,7 @@ const sendTaskNotification = async (task, action, recipient) => {
   }
 };
 
-// Simplified authentication middleware for testing
-const authenticate = (req, res, next) => {
-  // For testing purposes, we'll use a simple token check
-  const authHeader = req.headers.authorization;
-  
-  // During development/testing, allow requests without auth
-  if (!authHeader) {
-    console.log('No authorization header, proceeding with default user');
-    req.user = {
-      email: 'admin@example.com',
-      groups: ['Admins']
-    };
-    return next();
-  }
-  
-  // In a real app, we would verify the token here
-  req.user = {
-    email: 'admin@example.com',
-    groups: ['Admins']
-  };
-  next();
-};
-
 // Routes
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'healthy' });
-});
-
 // Create a new task (Admin only)
 app.post('/tasks', authenticate, async (req, res) => {
   try {
@@ -269,8 +282,16 @@ app.put('/tasks/:taskId', authenticate, async (req, res) => {
 });
 
 // Start the server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+});
+
+// Handle process termination
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
 });
 
 module.exports = app;
