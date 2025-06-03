@@ -42,8 +42,8 @@ logs/
 *.log
 
 # Local configuration
-config.js
-frontend/config.js
+#config.js
+#frontend/config.js
 
 # Demo files
 *-demo.*
