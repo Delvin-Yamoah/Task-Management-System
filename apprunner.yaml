@@ -19,10 +19,10 @@ run:
       value: eu-west-1
     - name: TASKS_TABLE
       value: Tasks
-    # These values will be set during deployment
+    # Updated with actual values
     - name: USER_POOL_ID
-      value: "REPLACE_WITH_USER_POOL_ID"
+      value: "eu-west-1_DXi2cNzOu"
     - name: SENDER_EMAIL
-      value: "REPLACE_WITH_SENDER_EMAIL"
+      value: "yamoahdelvin@gmail.com"
     - name: FRONTEND_URL
-      value: "REPLACE_WITH_AMPLIFY_URL"
+      value: "*"
