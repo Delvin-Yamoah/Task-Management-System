@@ -3,15 +3,13 @@ frontend:
   phases:
     preBuild:
       commands:
-        - cd frontend
-        - npm install
+        - echo "No build steps needed for static HTML/CSS/JS"
     build:
       commands:
-        - npm run build
+        - echo "Skipping build"
   artifacts:
     baseDirectory: frontend
     files:
       - '**/*'
   cache:
-    paths:
-      - 'frontend/node_modules/**/*'
+    paths: []

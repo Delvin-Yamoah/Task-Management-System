@@ -1,0 +1,9 @@
+{
+  "name": "task-management-frontend",
+  "version": "1.0.0",
+  "description": "Task Management System Frontend",
+  "scripts": {
+    "build": "echo 'No build step needed for static HTML/CSS/JS'"
+  },
+  "dependencies": {}
+}
