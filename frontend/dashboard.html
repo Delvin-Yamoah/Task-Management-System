@@ -1,373 +1,397 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Task Management Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .dashboard-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-    
-    .dashboard-card {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-    }
-    
-    .dashboard-card h3 {
-      margin-top: 0;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-    }
-    
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #0066cc;
-      margin: 10px 0;
-    }
-    
-    .chart-container {
-      height: 200px;
-      margin-top: 20px;
-    }
-    
-    .task-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    
-    .task-item {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .task-item:last-child {
-      border-bottom: none;
-    }
-    
-    .priority-indicator {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-right: 5px;
-    }
-    
-    .priority-high {
-      background-color: #f44336;
-    }
-    
-    .priority-medium {
-      background-color: #ff9800;
-    }
-    
-    .priority-low {
-      background-color: #4caf50;
-    }
-  </style>
-</head>
-<body>
-  <div id="app">
-    <header>
-      <h1>Task Management Dashboard</h1>
-      <div class="user-info">
-        <span id="user-name"></span>
-        <span id="user-role"></span>
-        <a href="index.html" class="nav-link">Main App</a>
-        <button id="logout-button">Logout</button>
-      </div>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Management Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
 
-    <div class="dashboard-container">
-      <div class="dashboard-card">
-        <h3>Task Summary</h3>
-        <div class="stat-number" id="total-tasks">0</div>
-        <p>Total Tasks</p>
-        <div class="task-stats">
-          <div><strong>Pending:</strong> <span id="pending-count">0</span></div>
-          <div><strong>In Progress:</strong> <span id="progress-count">0</span></div>
-          <div><strong>Completed:</strong> <span id="completed-count">0</span></div>
+      .dashboard-card {
+        background-color: black;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+
+      .dashboard-card h3 {
+        margin-top: 0;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #0066cc;
+        margin: 10px 0;
+      }
+
+      .chart-container {
+        height: 200px;
+        margin-top: 20px;
+      }
+
+      .task-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .task-item {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .task-item:last-child {
+        border-bottom: none;
+      }
+
+      .priority-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+
+      .priority-high {
+        background-color: #f44336;
+      }
+
+      .priority-medium {
+        background-color: #ff9800;
+      }
+
+      .priority-low {
+        background-color: #4caf50;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Task Management Dashboard</h1>
+        <div class="user-info">
+          <span id="user-name"></span>
+          <span id="user-role"></span>
+          <a href="index.html" class="nav-link">Main App</a>
+          <button id="logout-button">Logout</button>
         </div>
-      </div>
-      
-      <div class="dashboard-card">
-        <h3>Tasks by Priority</h3>
-        <div class="task-stats">
-          <div><span class="priority-indicator priority-high"></span> <strong>High:</strong> <span id="high-count">0</span></div>
-          <div><span class="priority-indicator priority-medium"></span> <strong>Medium:</strong> <span id="medium-count">0</span></div>
-          <div><span class="priority-indicator priority-low"></span> <strong>Low:</strong> <span id="low-count">0</span></div>
+      </header>
+
+      <div class="dashboard-container">
+        <div class="dashboard-card">
+          <h3>Task Summary</h3>
+          <div class="stat-number" id="total-tasks">0</div>
+          <p>Total Tasks</p>
+          <div class="task-stats">
+            <div>
+              <strong>Pending:</strong> <span id="pending-count">0</span>
+            </div>
+            <div>
+              <strong>In Progress:</strong> <span id="progress-count">0</span>
+            </div>
+            <div>
+              <strong>Completed:</strong> <span id="completed-count">0</span>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div class="dashboard-card">
-        <h3>Recent Tasks</h3>
-        <div class="task-list" id="recent-tasks">
-          <p>No tasks found.</p>
+
+        <div class="dashboard-card">
+          <h3>Tasks by Priority</h3>
+          <div class="task-stats">
+            <div>
+              <span class="priority-indicator priority-high"></span>
+              <strong>High:</strong> <span id="high-count">0</span>
+            </div>
+            <div>
+              <span class="priority-indicator priority-medium"></span>
+              <strong>Medium:</strong> <span id="medium-count">0</span>
+            </div>
+            <div>
+              <span class="priority-indicator priority-low"></span>
+              <strong>Low:</strong> <span id="low-count">0</span>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div class="dashboard-card">
-        <h3>Upcoming Deadlines</h3>
-        <div class="task-list" id="upcoming-deadlines">
-          <p>No upcoming deadlines.</p>
+
+        <div class="dashboard-card">
+          <h3>Recent Tasks</h3>
+          <div class="task-list" id="recent-tasks">
+            <p>No tasks found.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3>Upcoming Deadlines</h3>
+          <div class="task-list" id="upcoming-deadlines">
+            <p>No upcoming deadlines.</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@5.2.10/dist/amazon-cognito-identity.min.js"></script>
-  <script>
-    // Initialize the Amazon Cognito credentials provider
-    const userPool = new AmazonCognitoIdentity.CognitoUserPool({
-      UserPoolId: awsConfig.userPoolId,
-      ClientId: awsConfig.userPoolWebClientId
-    });
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@5.2.10/dist/amazon-cognito-identity.min.js"></script>
+    <script>
+      // Initialize the Amazon Cognito credentials provider
+      const userPool = new AmazonCognitoIdentity.CognitoUserPool({
+        UserPoolId: awsConfig.userPoolId,
+        ClientId: awsConfig.userPoolWebClientId,
+      });
 
-    // DOM Elements
-    const userName = document.getElementById('user-name');
-    const userRole = document.getElementById('user-role');
-    const logoutButton = document.getElementById('logout-button');
-    const totalTasks = document.getElementById('total-tasks');
-    const pendingCount = document.getElementById('pending-count');
-    const progressCount = document.getElementById('progress-count');
-    const completedCount = document.getElementById('completed-count');
-    const highCount = document.getElementById('high-count');
-    const mediumCount = document.getElementById('medium-count');
-    const lowCount = document.getElementById('low-count');
-    const recentTasks = document.getElementById('recent-tasks');
-    const upcomingDeadlines = document.getElementById('upcoming-deadlines');
+      // DOM Elements
+      const userName = document.getElementById("user-name");
+      const userRole = document.getElementById("user-role");
+      const logoutButton = document.getElementById("logout-button");
+      const totalTasks = document.getElementById("total-tasks");
+      const pendingCount = document.getElementById("pending-count");
+      const progressCount = document.getElementById("progress-count");
+      const completedCount = document.getElementById("completed-count");
+      const highCount = document.getElementById("high-count");
+      const mediumCount = document.getElementById("medium-count");
+      const lowCount = document.getElementById("low-count");
+      const recentTasks = document.getElementById("recent-tasks");
+      const upcomingDeadlines = document.getElementById("upcoming-deadlines");
 
-    // Current user session
-    let currentUser = null;
-    let isAdmin = false;
-    let idToken = null;
+      // Current user session
+      let currentUser = null;
+      let isAdmin = false;
+      let idToken = null;
 
-    // Event Listeners
-    document.addEventListener('DOMContentLoaded', checkSession);
-    logoutButton.addEventListener('click', logout);
+      // Event Listeners
+      document.addEventListener("DOMContentLoaded", checkSession);
+      logoutButton.addEventListener("click", logout);
 
-    // Check if user is already logged in
-    function checkSession() {
-      const cognitoUser = userPool.getCurrentUser();
-      
-      if (cognitoUser != null) {
-        cognitoUser.getSession((err, session) => {
-          if (err) {
-            console.error('Error getting session:', err);
-            window.location.href = 'index.html';
-            return;
+      // Check if user is already logged in
+      function checkSession() {
+        const cognitoUser = userPool.getCurrentUser();
+
+        if (cognitoUser != null) {
+          cognitoUser.getSession((err, session) => {
+            if (err) {
+              console.error("Error getting session:", err);
+              window.location.href = "index.html";
+              return;
+            }
+
+            if (session.isValid()) {
+              idToken = session.getIdToken().getJwtToken();
+
+              // Get user attributes
+              cognitoUser.getUserAttributes((err, attributes) => {
+                if (err) {
+                  console.error("Error getting user attributes:", err);
+                  window.location.href = "index.html";
+                  return;
+                }
+
+                const nameAttribute = attributes.find(
+                  (attr) => attr.Name === "name"
+                );
+                if (nameAttribute) {
+                  currentUser = {
+                    email: cognitoUser.getUsername(),
+                    name: nameAttribute.Value,
+                  };
+
+                  // Check if user is admin
+                  const payload = parseJwt(idToken);
+                  isAdmin =
+                    payload["cognito:groups"] &&
+                    payload["cognito:groups"].includes("Admins");
+
+                  // Update UI
+                  updateDashboard();
+                }
+              });
+            } else {
+              window.location.href = "index.html";
+            }
+          });
+        } else {
+          window.location.href = "index.html";
+        }
+      }
+
+      // Logout function
+      function logout() {
+        const cognitoUser = userPool.getCurrentUser();
+        if (cognitoUser) {
+          cognitoUser.signOut();
+          window.location.href = "index.html";
+        }
+      }
+
+      // Update dashboard with data
+      function updateDashboard() {
+        // Update user info
+        userName.textContent = currentUser.name;
+        userRole.textContent = isAdmin ? "Admin" : "Team Member";
+
+        // Load tasks
+        loadTasks();
+      }
+
+      // Load tasks from API
+      function loadTasks() {
+        fetch(`${awsConfig.apiEndpoint}/tasks`, {
+          headers: {
+            Authorization: idToken,
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to load tasks");
+            }
+            return response.json();
+          })
+          .then((tasks) => {
+            updateDashboardStats(tasks);
+          })
+          .catch((error) => {
+            console.error("Error loading tasks:", error);
+            alert("Error loading dashboard data. Please try again.");
+          });
+      }
+
+      // Update dashboard statistics
+      function updateDashboardStats(tasks) {
+        // Update total tasks
+        totalTasks.textContent = tasks.length;
+
+        // Count tasks by status
+        const statusCounts = {
+          pending: 0,
+          "in-progress": 0,
+          completed: 0,
+        };
+
+        // Count tasks by priority
+        const priorityCounts = {
+          high: 0,
+          medium: 0,
+          low: 0,
+        };
+
+        tasks.forEach((task) => {
+          // Count by status
+          if (statusCounts.hasOwnProperty(task.status)) {
+            statusCounts[task.status]++;
           }
-          
-          if (session.isValid()) {
-            idToken = session.getIdToken().getJwtToken();
-            
-            // Get user attributes
-            cognitoUser.getUserAttributes((err, attributes) => {
-              if (err) {
-                console.error('Error getting user attributes:', err);
-                window.location.href = 'index.html';
-                return;
-              }
-              
-              const nameAttribute = attributes.find(attr => attr.Name === 'name');
-              if (nameAttribute) {
-                currentUser = {
-                  email: cognitoUser.getUsername(),
-                  name: nameAttribute.Value
-                };
-                
-                // Check if user is admin
-                const payload = parseJwt(idToken);
-                isAdmin = payload['cognito:groups'] && payload['cognito:groups'].includes('Admins');
-                
-                // Update UI
-                updateDashboard();
-              }
-            });
-          } else {
-            window.location.href = 'index.html';
+
+          // Count by priority
+          if (priorityCounts.hasOwnProperty(task.priority)) {
+            priorityCounts[task.priority]++;
           }
         });
-      } else {
-        window.location.href = 'index.html';
+
+        // Update status counts
+        pendingCount.textContent = statusCounts.pending;
+        progressCount.textContent = statusCounts["in-progress"];
+        completedCount.textContent = statusCounts.completed;
+
+        // Update priority counts
+        highCount.textContent = priorityCounts.high;
+        mediumCount.textContent = priorityCounts.medium;
+        lowCount.textContent = priorityCounts.low;
+
+        // Show recent tasks (last 5)
+        const sortedByDate = [...tasks].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        const recentTasksList = sortedByDate.slice(0, 5);
+        displayTaskList(recentTasks, recentTasksList);
+
+        // Show upcoming deadlines (next 5 non-completed tasks)
+        const upcomingTasks = tasks
+          .filter((task) => task.status !== "completed")
+          .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+          .slice(0, 5);
+
+        displayDeadlines(upcomingDeadlines, upcomingTasks);
       }
-    }
 
-    // Logout function
-    function logout() {
-      const cognitoUser = userPool.getCurrentUser();
-      if (cognitoUser) {
-        cognitoUser.signOut();
-        window.location.href = 'index.html';
-      }
-    }
-
-    // Update dashboard with data
-    function updateDashboard() {
-      // Update user info
-      userName.textContent = currentUser.name;
-      userRole.textContent = isAdmin ? 'Admin' : 'Team Member';
-      
-      // Load tasks
-      loadTasks();
-    }
-
-    // Load tasks from API
-    function loadTasks() {
-      fetch(`${awsConfig.apiEndpoint}/tasks`, {
-        headers: {
-          'Authorization': idToken,
-          'Content-Type': 'application/json'
-        },
-        mode: 'cors'
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to load tasks');
+      // Display task list
+      function displayTaskList(container, tasks) {
+        if (tasks.length === 0) {
+          container.innerHTML = "<p>No tasks found.</p>";
+          return;
         }
-        return response.json();
-      })
-      .then(tasks => {
-        updateDashboardStats(tasks);
-      })
-      .catch(error => {
-        console.error('Error loading tasks:', error);
-        alert('Error loading dashboard data. Please try again.');
-      });
-    }
 
-    // Update dashboard statistics
-    function updateDashboardStats(tasks) {
-      // Update total tasks
-      totalTasks.textContent = tasks.length;
-      
-      // Count tasks by status
-      const statusCounts = {
-        pending: 0,
-        'in-progress': 0,
-        completed: 0
-      };
-      
-      // Count tasks by priority
-      const priorityCounts = {
-        high: 0,
-        medium: 0,
-        low: 0
-      };
-      
-      tasks.forEach(task => {
-        // Count by status
-        if (statusCounts.hasOwnProperty(task.status)) {
-          statusCounts[task.status]++;
-        }
-        
-        // Count by priority
-        if (priorityCounts.hasOwnProperty(task.priority)) {
-          priorityCounts[task.priority]++;
-        }
-      });
-      
-      // Update status counts
-      pendingCount.textContent = statusCounts.pending;
-      progressCount.textContent = statusCounts['in-progress'];
-      completedCount.textContent = statusCounts.completed;
-      
-      // Update priority counts
-      highCount.textContent = priorityCounts.high;
-      mediumCount.textContent = priorityCounts.medium;
-      lowCount.textContent = priorityCounts.low;
-      
-      // Show recent tasks (last 5)
-      const sortedByDate = [...tasks].sort((a, b) => 
-        new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      
-      const recentTasksList = sortedByDate.slice(0, 5);
-      displayTaskList(recentTasks, recentTasksList);
-      
-      // Show upcoming deadlines (next 5 non-completed tasks)
-      const upcomingTasks = tasks
-        .filter(task => task.status !== 'completed')
-        .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-        .slice(0, 5);
-      
-      displayDeadlines(upcomingDeadlines, upcomingTasks);
-    }
+        container.innerHTML = "";
 
-    // Display task list
-    function displayTaskList(container, tasks) {
-      if (tasks.length === 0) {
-        container.innerHTML = '<p>No tasks found.</p>';
-        return;
-      }
-      
-      container.innerHTML = '';
-      
-      tasks.forEach(task => {
-        const taskItem = document.createElement('div');
-        taskItem.className = 'task-item';
-        
-        taskItem.innerHTML = `
+        tasks.forEach((task) => {
+          const taskItem = document.createElement("div");
+          taskItem.className = "task-item";
+
+          taskItem.innerHTML = `
           <div>
             <span class="priority-indicator priority-${task.priority}"></span>
             <strong>${task.title}</strong>
           </div>
           <div>Status: ${task.status}</div>
         `;
-        
-        container.appendChild(taskItem);
-      });
-    }
 
-    // Display deadlines
-    function displayDeadlines(container, tasks) {
-      if (tasks.length === 0) {
-        container.innerHTML = '<p>No upcoming deadlines.</p>';
-        return;
+          container.appendChild(taskItem);
+        });
       }
-      
-      container.innerHTML = '';
-      
-      tasks.forEach(task => {
-        const taskItem = document.createElement('div');
-        taskItem.className = 'task-item';
-        
-        const deadlineDate = new Date(task.deadline);
-        const today = new Date();
-        const isOverdue = deadlineDate < today;
-        
-        taskItem.innerHTML = `
+
+      // Display deadlines
+      function displayDeadlines(container, tasks) {
+        if (tasks.length === 0) {
+          container.innerHTML = "<p>No upcoming deadlines.</p>";
+          return;
+        }
+
+        container.innerHTML = "";
+
+        tasks.forEach((task) => {
+          const taskItem = document.createElement("div");
+          taskItem.className = "task-item";
+
+          const deadlineDate = new Date(task.deadline);
+          const today = new Date();
+          const isOverdue = deadlineDate < today;
+
+          taskItem.innerHTML = `
           <div>
             <span class="priority-indicator priority-${task.priority}"></span>
             <strong>${task.title}</strong>
           </div>
-          <div class="${isOverdue ? 'overdue' : ''}">
+          <div class="${isOverdue ? "overdue" : ""}">
             Due: ${deadlineDate.toLocaleDateString()}
           </div>
         `;
-        
-        container.appendChild(taskItem);
-      });
-    }
 
-    // Helper function to parse JWT token
-    function parseJwt(token) {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      
-      return JSON.parse(jsonPayload);
-    }
-  </script>
-</body>
+          container.appendChild(taskItem);
+        });
+      }
+
+      // Helper function to parse JWT token
+      function parseJwt(token) {
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map(function (c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+        );
+
+        return JSON.parse(jsonPayload);
+      }
+    </script>
+  </body>
 </html>
