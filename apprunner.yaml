@@ -14,9 +14,9 @@ run:
     - name: PORT
       value: "3000"
     - name: AWS_REGION
-      value: eu-west-1"
+      value: "eu-west-1"
     - name: TASKS_TABLE
-      value: Tasks
+      value: "Tasks"
     - name: USER_POOL_ID
       value: "eu-west-1_DXi2cNzOu"
     - name: SENDER_EMAIL
