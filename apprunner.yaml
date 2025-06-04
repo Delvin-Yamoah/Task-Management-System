@@ -15,4 +15,3 @@ run:
       value: "eu-west-1"
     - name: TASKS_TABLE
       value: "Tasks"
-  service_role: "arn:aws:iam::315215624331:role/apprunner-dynamo"
