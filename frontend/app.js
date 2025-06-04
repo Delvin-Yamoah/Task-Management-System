@@ -162,12 +162,8 @@ function register(name, email, password) {
     new AmazonCognitoIdentity.CognitoUserAttribute({
       Name: 'email',
       Value: email
-    }),
-    // Default role is team member
-    new AmazonCognitoIdentity.CognitoUserAttribute({
-      Name: 'custom:role',
-      Value: 'TeamMember'
     })
+    // Removed custom:role attribute that was causing the error
   ];
   
   userPool.signUp(email, password, attributeList, null, (err, result) => {
