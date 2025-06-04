@@ -108,15 +108,38 @@ async function getUserDetails(email) {
   }
 }
 
-// Get all tasks
+// Get tasks based on user role
 app.get('/tasks', async (req, res) => {
   try {
-    const params = {
-      TableName: TASKS_TABLE
-    };
+    // Get user info from token
+    const token = req.headers.authorization;
+    const tokenData = parseJwt(token);
+    const userEmail = tokenData.email || null;
+    const isAdmin = tokenData['cognito:groups'] && tokenData['cognito:groups'].includes('Admins');
     
-    const result = await dynamoDB.scan(params).promise();
-    res.json(result.Items || []);
+    let params;
+    
+    if (isAdmin) {
+      // Admins can see all tasks
+      params = {
+        TableName: TASKS_TABLE
+      };
+      
+      const result = await dynamoDB.scan(params).promise();
+      res.json(result.Items || []);
+    } else {
+      // Regular users can only see tasks assigned to them
+      params = {
+        TableName: TASKS_TABLE,
+        FilterExpression: "assignedTo = :email",
+        ExpressionAttributeValues: {
+          ":email": userEmail
+        }
+      };
+      
+      const result = await dynamoDB.scan(params).promise();
+      res.json(result.Items || []);
+    }
   } catch (error) {
     console.error('Error getting tasks:', error);
     res.status(500).json({ error: 'Could not retrieve tasks' });
