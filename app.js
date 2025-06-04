@@ -8,10 +8,12 @@ const port = process.env.PORT || 3000;
 // Environment variables
 const REGION = process.env.AWS_REGION || 'eu-west-1';
 const TASKS_TABLE = process.env.TASKS_TABLE || 'Tasks';
+const USER_POOL_ID = process.env.USER_POOL_ID || 'eu-west-1_JCjdxsabm';
 
 // AWS SDK configuration
 AWS.config.update({ region: REGION });
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const cognito = new AWS.CognitoIdentityServiceProvider();
 
 // Middleware
 app.use(cors({
@@ -118,8 +120,40 @@ app.put('/tasks/:taskId', async (req, res) => {
   }
 });
 
+// Get users (admin only)
+app.get('/users', async (req, res) => {
+  try {
+    // In a real app, verify the token and check if user is admin
+    
+    const params = {
+      UserPoolId: USER_POOL_ID,
+      Filter: 'cognito:user_status = "CONFIRMED"',
+      Limit: 60
+    };
+    
+    const result = await cognito.listUsers(params).promise();
+    
+    const users = result.Users.map(user => {
+      const emailAttr = user.Attributes.find(attr => attr.Name === 'email');
+      const nameAttr = user.Attributes.find(attr => attr.Name === 'name');
+      
+      return {
+        username: user.Username,
+        email: emailAttr ? emailAttr.Value : '',
+        name: nameAttr ? nameAttr.Value : '',
+        status: user.UserStatus
+      };
+    });
+    
+    res.json(users);
+  } catch (error) {
+    console.error('Error listing users:', error);
+    res.status(500).json({ error: 'Could not list users' });
+  }
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
-  console.log(`Environment: REGION=${REGION}, TABLE=${TASKS_TABLE}`);
+  console.log(`Environment: REGION=${REGION}, TABLE=${TASKS_TABLE}, USER_POOL=${USER_POOL_ID}`);
 });

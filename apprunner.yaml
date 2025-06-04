@@ -15,3 +15,5 @@ run:
       value: "eu-west-1"
     - name: TASKS_TABLE
       value: "Tasks"
+    - name: USER_POOL_ID
+      value: "eu-west-1_JCjdxsabm"

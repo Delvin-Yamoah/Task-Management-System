@@ -435,8 +435,46 @@ function createTask() {
 
 // Load team members for admin task assignment
 function loadTeamMembers() {
-  // In a real application, you would fetch team members from an API
-  // For this example, we'll use a placeholder
+  // Get the token for authorization
+  const token = idToken;
+  
+  // Call API to list users
+  fetch(`${awsConfig.apiEndpoint}/users`, {
+    headers: {
+      'Authorization': token,
+      'Content-Type': 'application/json'
+    },
+    mode: 'cors'
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to load team members');
+    }
+    return response.json();
+  })
+  .then(users => {
+    const assigneeSelect = document.getElementById('task-assignee');
+    
+    // Clear existing options
+    assigneeSelect.innerHTML = '<option value="">Assign To...</option>';
+    
+    // Add users to dropdown
+    users.forEach(user => {
+      const option = document.createElement('option');
+      option.value = user.email;
+      option.textContent = user.name || user.email;
+      assigneeSelect.appendChild(option);
+    });
+  })
+  .catch(error => {
+    console.error('Error loading team members:', error);
+    // Fallback to placeholder data if API call fails
+    loadPlaceholderTeamMembers();
+  });
+}
+
+// Fallback function for loading placeholder team members
+function loadPlaceholderTeamMembers() {
   const assigneeSelect = document.getElementById('task-assignee');
   
   // Clear existing options
