@@ -10,8 +10,10 @@ const appSection = document.getElementById('app-section');
 const adminSection = document.getElementById('admin-section');
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
+const confirmForm = document.getElementById('confirm-form');
 const showRegisterLink = document.getElementById('show-register');
 const showLoginLink = document.getElementById('show-login');
+const showLoginFromConfirmLink = document.getElementById('show-login-from-confirm');
 const userName = document.getElementById('user-name');
 const userRole = document.getElementById('user-role');
 const logoutButton = document.getElementById('logout-button');
@@ -26,8 +28,9 @@ let idToken = null;
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', checkSession);
-showRegisterLink.addEventListener('click', toggleAuthForms);
-showLoginLink.addEventListener('click', toggleAuthForms);
+showRegisterLink.addEventListener('click', showRegisterForm);
+showLoginLink.addEventListener('click', showLoginForm);
+showLoginFromConfirmLink.addEventListener('click', showLoginForm);
 logoutButton.addEventListener('click', logout);
 
 // Login form submission
@@ -45,6 +48,9 @@ document.getElementById('register-button').addEventListener('click', () => {
   register(name, email, password);
 });
 
+// Confirmation form submission
+document.getElementById('confirm-button').addEventListener('click', confirmRegistration);
+
 // Create task button (for admins)
 const createTaskButton = document.getElementById('create-task-button');
 if (createTaskButton) {
@@ -55,11 +61,25 @@ if (createTaskButton) {
 statusFilter.addEventListener('change', filterTasks);
 priorityFilter.addEventListener('change', filterTasks);
 
-// Toggle between login and register forms
-function toggleAuthForms(e) {
-  e.preventDefault();
-  loginForm.classList.toggle('hidden');
-  registerForm.classList.toggle('hidden');
+// Show login form
+function showLoginForm() {
+  loginForm.classList.remove('hidden');
+  registerForm.classList.add('hidden');
+  confirmForm.classList.add('hidden');
+}
+
+// Show register form
+function showRegisterForm() {
+  loginForm.classList.add('hidden');
+  registerForm.classList.remove('hidden');
+  confirmForm.classList.add('hidden');
+}
+
+// Show confirmation form
+function showConfirmationForm() {
+  loginForm.classList.add('hidden');
+  registerForm.classList.add('hidden');
+  confirmForm.classList.remove('hidden');
 }
 
 // Check if user is already logged in
@@ -172,8 +192,35 @@ function register(name, email, password) {
       return;
     }
     
+    // Pre-fill the email in the confirmation form
+    document.getElementById('confirm-email').value = email;
+    
+    // Show confirmation form
+    showConfirmationForm();
+    
     alert('Registration successful! Please check your email for verification code.');
-    toggleAuthForms({ preventDefault: () => {} });
+  });
+}
+
+// Confirm registration function
+function confirmRegistration() {
+  const email = document.getElementById('confirm-email').value;
+  const code = document.getElementById('confirm-code').value;
+  
+  const userData = {
+    Username: email,
+    Pool: userPool
+  };
+  
+  const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+  
+  cognitoUser.confirmRegistration(code, true, function(err, result) {
+    if (err) {
+      alert('Error confirming registration: ' + err.message);
+      return;
+    }
+    alert('Registration confirmed! You can now log in.');
+    showLoginForm();
   });
 }
 
