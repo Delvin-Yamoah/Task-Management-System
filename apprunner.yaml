@@ -8,3 +8,10 @@ run:
   command: npm start
   network:
     port: 3000
+  env:
+    - name: FRONTEND_URL
+      value: "https://main.dc15m8g1bzq89.amplifyapp.com"
+    - name: AWS_REGION
+      value: "eu-west-1"
+    - name: TASKS_TABLE
+      value: "Tasks"
