@@ -327,6 +327,9 @@ function displayTasks(tasks) {
           Due: ${deadlineDate.toLocaleDateString()}
         </span>
       </div>
+      <div class="task-assigned">
+        <span class="assigned-to">Assigned to: ${task.assigneeName || task.assignedTo}</span>
+      </div>
       <div class="task-status">
         <select class="status-select" data-task-id="${task.taskId}">
           <option value="pending" ${task.status === 'pending' ? 'selected' : ''}>Pending</option>
