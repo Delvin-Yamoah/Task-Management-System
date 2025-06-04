@@ -5,9 +5,26 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+:root {
+  --dark-bg: #1a1a1a;
+  --darker-bg: #121212;
+  --card-bg: #242424;
+  --primary-green: #4CAF50;
+  --light-green: #81c784;
+  --dark-green: #2e7d32;
+  --text-light: #e0e0e0;
+  --text-muted: #9e9e9e;
+  --border-color: #333333;
+  --input-bg: #333333;
+  --success: #66bb6a;
+  --warning: #ffb74d;
+  --danger: #e57373;
+  --info: #64b5f6;
+}
+
 body {
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--dark-bg);
+  color: var(--text-light);
   line-height: 1.6;
 }
 
@@ -22,11 +39,12 @@ body {
 }
 
 .section {
-  background-color: white;
+  background-color: var(--darker-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   padding: 30px;
   margin-bottom: 20px;
+  border: 1px solid var(--border-color);
 }
 
 /* Auth Forms */
@@ -39,21 +57,24 @@ body {
 .auth-form h2 {
   margin-bottom: 20px;
   text-align: center;
+  color: var(--primary-green);
 }
 
 .auth-form input {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 16px;
+  background-color: var(--input-bg);
+  color: var(--text-light);
 }
 
 .auth-form button {
   width: 100%;
   padding: 12px;
-  background-color: #0066cc;
+  background-color: var(--primary-green);
   color: white;
   border: none;
   border-radius: 4px;
@@ -63,16 +84,17 @@ body {
 }
 
 .auth-form button:hover {
-  background-color: #0052a3;
+  background-color: var(--dark-green);
 }
 
 .auth-form p {
   text-align: center;
   margin-top: 15px;
+  color: var(--text-muted);
 }
 
 .auth-form a {
-  color: #0066cc;
+  color: var(--light-green);
   text-decoration: none;
 }
 
@@ -83,7 +105,11 @@ header {
   align-items: center;
   margin-bottom: 30px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+  color: var(--primary-green);
 }
 
 .user-info {
@@ -93,15 +119,16 @@ header {
 }
 
 #user-role {
-  background-color: #e6f2ff;
+  background-color: var(--dark-green);
   padding: 5px 10px;
   border-radius: 15px;
   font-size: 14px;
+  color: white;
 }
 
 #logout-button {
   padding: 8px 15px;
-  background-color: #f44336;
+  background-color: var(--danger);
   color: white;
   border: none;
   border-radius: 4px;
@@ -110,7 +137,7 @@ header {
 
 .nav-link {
   padding: 8px 15px;
-  background-color: #4CAF50;
+  background-color: var(--primary-green);
   color: white;
   text-decoration: none;
   border-radius: 4px;
@@ -118,10 +145,11 @@ header {
 
 /* Task Form */
 .task-form {
-  background-color: #f9f9f9;
+  background-color: var(--card-bg);
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 30px;
+  border: 1px solid var(--border-color);
 }
 
 .task-form input,
@@ -130,9 +158,11 @@ header {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 16px;
+  background-color: var(--input-bg);
+  color: var(--text-light);
 }
 
 .task-form textarea {
@@ -142,7 +172,7 @@ header {
 
 .task-form button {
   padding: 12px 20px;
-  background-color: #4CAF50;
+  background-color: var(--primary-green);
   color: white;
   border: none;
   border-radius: 4px;
@@ -152,7 +182,7 @@ header {
 }
 
 .task-form button:hover {
-  background-color: #3e8e41;
+  background-color: var(--dark-green);
 }
 
 /* Tasks Section */
@@ -164,8 +194,10 @@ header {
 
 .task-filters select {
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-light);
 }
 
 #tasks-container {
@@ -175,21 +207,29 @@ header {
 }
 
 .task-card {
-  background-color: white;
+  background-color: var(--card-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   padding: 20px;
   position: relative;
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 .task-card h3 {
   margin-bottom: 10px;
   padding-right: 30px;
+  color: var(--primary-green);
 }
 
 .task-card p {
   margin-bottom: 10px;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .task-meta {
@@ -206,50 +246,74 @@ header {
 }
 
 .priority-low {
-  background-color: #e6f7ff;
-  color: #0066cc;
+  background-color: rgba(100, 181, 246, 0.2);
+  color: var(--info);
 }
 
 .priority-medium {
-  background-color: #fff7e6;
-  color: #ff9900;
+  background-color: rgba(255, 183, 77, 0.2);
+  color: var(--warning);
 }
 
 .priority-high {
-  background-color: #ffebee;
-  color: #f44336;
+  background-color: rgba(229, 115, 115, 0.2);
+  color: var(--danger);
 }
 
 .task-status {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  margin-top: 15px;
 }
 
 .task-status select {
   padding: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-}
-
-.status-pending {
-  color: #ff9900;
-}
-
-.status-in-progress {
-  color: #0066cc;
-}
-
-.status-completed {
-  color: #4CAF50;
+  background-color: var(--input-bg);
+  color: var(--text-light);
+  width: 100%;
 }
 
 .deadline {
-  color: #f44336;
-  font-weight: bold;
+  color: var(--text-muted);
 }
 
 .overdue {
-  color: #f44336;
+  color: var(--danger);
   font-weight: bold;
+}
+
+.task-assigned {
+  margin: 8px 0;
+  font-size: 0.9em;
+}
+
+.assigned-to {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: rgba(76, 175, 80, 0.2);
+  border-radius: 4px;
+  color: var(--light-green);
+}
+
+/* Admin section */
+#admin-section h2 {
+  color: var(--primary-green);
+  margin-bottom: 15px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  #tasks-container {
+    grid-template-columns: 1fr;
+  }
+  
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .user-info {
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
 }
