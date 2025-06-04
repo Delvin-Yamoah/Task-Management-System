@@ -1,90 +1,166 @@
 # Task Management System
 
-A serverless task management system for field teams built with AWS App Runner and AWS Amplify.
+A modern task management application built with a serverless architecture using AWS services. This system allows administrators to create and assign tasks to team members, while team members can view and update the status of their assigned tasks.
 
 ## Architecture
 
-- **Authentication**: Amazon Cognito
-- **Backend**: Express.js on AWS App Runner
-- **Database**: Amazon DynamoDB
-- **Frontend**: Static HTML/CSS/JS hosted on AWS Amplify
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│             │     │             │     │             │
+│   AWS       │     │   AWS       │     │   Amazon    │
+│   Amplify   │◄────┤ App Runner  │◄────┤  DynamoDB   │
+│  (Frontend) │     │ (Backend)   │     │  (Database) │
+│             │     │             │     │             │
+└─────┬───────┘     └─────┬───────┘     └─────────────┘
+      │                   │
+      │                   │
+      ▼                   ▼
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│             │     │             │     │             │
+│   Amazon    │     │   Amazon    │     │   Amazon    │
+│   Cognito   │     │     SES     │     │    IAM      │
+│   (Auth)    │     │  (Emails)   │     │ (Security)  │
+│             │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘
+```
 
 ## Features
 
-- User authentication (Admin and Team Member roles)
-- Task creation and assignment
-- Task status updates
-- Email notifications for task assignments and updates
-- Dashboard for task overview and statistics
+- **User Authentication**: Secure login and registration using Amazon Cognito
+- **Role-Based Access Control**: Different permissions for admins and team members
+- **Task Management**: Create, view, and update tasks
+- **Email Notifications**: Automatic emails for task assignments and status updates
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Theme**: Modern dark and green UI theme
 
-## Project Structure
+## Technology Stack
 
-```
-Task-Management-System/
-├── backend/                 # Express.js application
-│   ├── app.js               # Main application file
-│   └── package.json         # Node.js dependencies
-├── frontend/                # Web application
-│   ├── app.js               # Main application logic
-│   ├── dashboard.html       # Dashboard interface
-│   ├── index.html           # Main interface
-│   └── styles.css           # CSS styling
-├── apprunner.yaml           # App Runner configuration
-└── amplify.yml              # Amplify configuration
-```
+### Frontend
+- HTML5, CSS3, JavaScript
+- Amazon Cognito for authentication
+- AWS Amplify for hosting
+
+### Backend
+- Node.js with Express
+- AWS App Runner for containerized deployment
+- Amazon DynamoDB for database
+- Amazon SES for email notifications
+- Amazon Cognito for user management
+
+## Deployment Architecture
+
+This project uses a modern serverless deployment approach:
+
+1. **Frontend**: Deployed on AWS Amplify
+   - Continuous deployment from GitHub repository
+   - Global content delivery via CloudFront
+   - HTTPS enabled by default
+
+2. **Backend**: Deployed on AWS App Runner
+   - Containerized Node.js application
+   - Auto-scaling based on demand
+   - Managed HTTPS endpoints
+
+3. **Database**: Amazon DynamoDB
+   - Serverless NoSQL database
+   - Auto-scaling capacity
+   - Pay-per-request pricing model
+
+4. **Authentication**: Amazon Cognito
+   - User pools for authentication
+   - Identity pools for authorization
+   - Integration with IAM roles
+
+5. **Email Service**: Amazon SES
+   - Transactional emails for notifications
+   - Email templates for consistent messaging
+   - Delivery monitoring and tracking
 
 ## Deployment Instructions
 
-### 1. Create DynamoDB Table
+### Prerequisites
+- AWS Account
+- AWS CLI configured with appropriate permissions
+- GitHub repository with your code
 
+### Frontend Deployment (AWS Amplify)
+1. Go to AWS Amplify console
+2. Click "New app" > "Host web app"
+3. Connect to your GitHub repository
+4. Configure build settings with amplify.yml
+5. Deploy the app
+
+### Backend Deployment (AWS App Runner)
+1. Go to AWS App Runner console
+2. Create a new service
+3. Connect to your GitHub repository
+4. Configure the service with apprunner.yaml
+5. Set environment variables:
+   - FRONTEND_URL: Your Amplify app URL
+   - AWS_REGION: e.g., eu-west-1
+   - TASKS_TABLE: DynamoDB table name
+   - USER_POOL_ID: Cognito User Pool ID
+   - SENDER_EMAIL: Verified email for notifications
+
+### Database Setup (DynamoDB)
 ```bash
 aws dynamodb create-table \
   --table-name Tasks \
   --attribute-definitions \
     AttributeName=taskId,AttributeType=S \
-    AttributeName=assignedTo,AttributeType=S \
   --key-schema AttributeName=taskId,KeyType=HASH \
-  --billing-mode PAY_PER_REQUEST \
-  --global-secondary-indexes \
-    IndexName=AssignedToIndex,KeySchema=["{AttributeName=assignedTo,KeyType=HASH}"],Projection="{ProjectionType=ALL}" \
-  --region eu-west-1
+  --billing-mode PAY_PER_REQUEST
 ```
 
-### 2. Create Cognito User Pool
-
+### Authentication Setup (Cognito)
 ```bash
+# Create User Pool
 aws cognito-idp create-user-pool \
   --pool-name TaskManagementUserPool \
-  --auto-verified-attributes email \
-  --schema Name=email,Required=true,Mutable=true Name=name,Required=true,Mutable=true \
-  --username-attributes email \
-  --region eu-west-1
+  --auto-verified-attributes email
+
+# Create App Client
+aws cognito-idp create-user-pool-client \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --client-name task-management-app \
+  --no-generate-secret
+
+# Create User Groups
+aws cognito-idp create-group \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --group-name Admins
+
+aws cognito-idp create-group \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --group-name TeamMembers
 ```
 
-### 3. Deploy Backend to App Runner
+### Email Setup (SES)
+1. Verify your sender email address in SES
+2. If in sandbox mode, verify recipient emails
+3. Request production access if needed
 
-1. Push code to GitHub
-2. Create App Runner service from GitHub repository
-3. Configure environment variables:
-   - AWS_REGION: eu-west-1
-   - TASKS_TABLE: Tasks
-   - USER_POOL_ID: (from Cognito)
-   - SENDER_EMAIL: (verified email for notifications)
-   - FRONTEND_URL: (Amplify URL after deployment)
+## Security Considerations
 
-### 4. Deploy Frontend to Amplify
+- IAM roles with least privilege principle
+- Environment variables for sensitive configuration
+- CORS configuration to restrict API access
+- JWT token validation for API requests
+- HTTPS for all communications
 
-1. Connect GitHub repository to Amplify
-2. Configure build settings using amplify.yml
-3. Update frontend/config.js with:
-   - API endpoint from App Runner
-   - Cognito User Pool ID and Client ID
+## Benefits of This Architecture
 
-## Demo Mode
+- **Scalability**: Automatically scales with demand
+- **Cost-Effective**: Pay only for what you use
+- **Maintenance**: No server management required
+- **Security**: Built-in security features
+- **Reliability**: High availability and fault tolerance
+- **Developer Experience**: Simplified deployment workflow
 
-A fully functional demo version is available that works entirely in the browser using localStorage instead of API calls:
+## Future Enhancements
 
-- Access the demo at: `index-demo.html`
-- Login with: `admin@example.com` (any password works in demo mode)
-- Create and manage tasks without backend dependencies
-- View task statistics in the dashboard
+- Task attachments using S3
+- Real-time notifications using WebSockets
+- Mobile application using React Native
+- Advanced reporting and analytics
+- Integration with calendar systems
