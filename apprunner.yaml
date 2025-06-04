@@ -1,19 +1,20 @@
 version: 1.0
 runtime: nodejs18
 build:
-  context: backend
   commands:
+    pre-build:
+      - cd backend
     build:
-      - npm install
+      - cd backend && npm install
 run:
-  command: npm start
+  command: cd backend && npm start
   network:
     port: 3000
   env:
     - name: PORT
       value: "3000"
     - name: AWS_REGION
-      value: eu-west-1
+      value: eu-west-1"
     - name: TASKS_TABLE
       value: Tasks
     - name: USER_POOL_ID
