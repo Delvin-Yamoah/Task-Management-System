@@ -1,31 +1,11 @@
 version: 1.0
 runtime: nodejs14
 build:
-  context: backend
   commands:
-    pre-build:
-      - echo "Installing dependencies..."
     build:
-      - npm install
-    post-build:
-      - echo "Build completed"
-      - ls -la
+      - cd backend
+      - npm install express
 run:
-  command: node app.js
+  command: cd backend && node index.js
   network:
     port: 3000
-  env:
-    - name: PORT
-      value: "3000"
-    - name: AWS_REGION
-      value: eu-west-1
-    - name: TASKS_TABLE
-      value: Tasks
-    - name: USER_POOL_ID
-      value: "eu-west-1_DXi2cNzOu"
-    - name: SENDER_EMAIL
-      value: "yamoahdelvin@gmail.com"
-    - name: FRONTEND_URL
-      value: "https://main.dc15m8g1bzq89.amplifyapp.com/"
-    - name: DEBUG
-      value: "express:*"
