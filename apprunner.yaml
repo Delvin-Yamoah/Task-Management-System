@@ -17,3 +17,5 @@ run:
       value: "Tasks"
     - name: USER_POOL_ID
       value: "eu-west-1_JCjdxsabm"
+    - name: SENDER_EMAIL
+      value: "yamoahdelvin@gmail.com"
